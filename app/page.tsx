@@ -1,5 +1,5 @@
-import QuestionForm from '@/components/QuestionForm'
+import WizardForm from '@/components/WizardForm'
 
 export default function Home() {
-  return <QuestionForm />
+  return <WizardForm />
 }

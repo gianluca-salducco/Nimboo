@@ -1,0 +1,87 @@
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import WizardForm from "./WizardForm";
+
+const Q1 = "Quali emozioni stai attraversando";
+const Q2 = "Cosa senti di aver bisogno";
+const Q3 = "Quanta energia hai per leggere";
+
+test("step 1: shows first question, not second or third", () => {
+  render(<WizardForm />);
+  expect(screen.getByText(new RegExp(Q1))).toBeInTheDocument();
+  expect(screen.queryByText(new RegExp(Q2))).not.toBeInTheDocument();
+  expect(screen.queryByText(new RegExp(Q3))).not.toBeInTheDocument();
+});
+
+test("clicking Avanti with a valid answer shows step 2 question", () => {
+  render(<WizardForm />);
+  const textarea = screen.getByRole("textbox");
+  fireEvent.change(textarea, { target: { value: "Mi sento molto triste e stanco ultimamente" } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  expect(screen.getByText(new RegExp(Q2))).toBeInTheDocument();
+  expect(screen.queryByText(new RegExp(Q1))).not.toBeInTheDocument();
+});
+
+test("progress indicator shows 'Passo 1 di 3' on load and updates as steps advance", () => {
+  render(<WizardForm />);
+  const progressRegion = screen.getByLabelText(/Passo 1 di 3/i);
+  expect(progressRegion).toBeInTheDocument();
+
+  const validAnswer = "Mi sento molto triste e stanco ultimamente";
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: validAnswer } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  expect(screen.getByLabelText(/Passo 2 di 3/i)).toBeInTheDocument();
+});
+
+test("button label changes to 'Trovami il libro' on the last step", () => {
+  render(<WizardForm />);
+  const validAnswer = "Mi sento molto triste e stanco ultimamente";
+
+  // advance to step 2
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: validAnswer } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  // advance to step 3
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: validAnswer } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  expect(screen.getByRole("button", { name: /Trovami il libro/i })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /^Avanti$/i })).not.toBeInTheDocument();
+});
+
+test("navigating back from step 2 restores the step-1 answer", () => {
+  render(<WizardForm />);
+  const answer1 = "Mi sento molto triste e stanco ultimamente";
+
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: answer1 } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+  fireEvent.click(screen.getByRole("button", { name: /Indietro/i }));
+
+  expect(screen.getByRole("textbox")).toHaveValue(answer1);
+});
+
+test("back button is hidden on step 1 and visible on step 2", () => {
+  render(<WizardForm />);
+  expect(screen.queryByRole("button", { name: /Indietro/i })).not.toBeInTheDocument();
+
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Mi sento molto triste e stanco ultimamente" } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  expect(screen.getByRole("button", { name: /Indietro/i })).toBeInTheDocument();
+});
+
+test("advance button is disabled when answer has fewer than 10 characters", () => {
+  render(<WizardForm />);
+  const btn = screen.getByRole("button", { name: /Avanti/i });
+  expect(btn).toBeDisabled();
+
+  const textarea = screen.getByRole("textbox");
+  fireEvent.change(textarea, { target: { value: "troppo breve" } }); // 12 chars — should enable
+  // first verify it enables at 12
+  expect(btn).not.toBeDisabled();
+
+  fireEvent.change(textarea, { target: { value: "corto" } }); // 5 chars — should disable
+  expect(btn).toBeDisabled();
+});
