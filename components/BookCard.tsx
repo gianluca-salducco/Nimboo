@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
+import { useCoverUrl } from '@/lib/useCoverUrl'
 
 interface BookRecommendation {
   title: string
@@ -13,18 +13,16 @@ interface BookRecommendation {
 
 export default function BookCard({ recommendation }: { recommendation: BookRecommendation }) {
   const { title, author, isbn, explanation, amazonUrl } = recommendation
-  const coverUrl = isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg` : null
+  const { url, status } = useCoverUrl(isbn)
 
   return (
     <div className="w-full max-w-lg mx-auto flex flex-col items-center gap-8 text-center">
       <p className="font-body text-ink-muted text-base">Il tuo libro per adesso è</p>
 
       <div className="flex-shrink-0">
-        {coverUrl ? (
-          <CoverImage url={coverUrl} title={title} />
-        ) : (
-          <CoverPlaceholder title={title} />
-        )}
+        {status === 'loading' && <CoverLoading />}
+        {status === 'ready' && url && <CoverImage url={url} title={title} />}
+        {status === 'error' && <CoverPlaceholder title={title} />}
       </div>
 
       <div className="flex flex-col gap-1">
@@ -57,15 +55,21 @@ export default function BookCard({ recommendation }: { recommendation: BookRecom
   )
 }
 
+function CoverLoading() {
+  return (
+    <div
+      data-testid="cover-loading"
+      className="w-44 h-64 rounded-xl shadow-xl bg-terracotta/20 animate-pulse"
+    />
+  )
+}
+
 function CoverImage({ url, title }: { url: string; title: string }) {
-  const [hasError, setHasError] = useState(false)
-  if (hasError) return <CoverPlaceholder title={title} />
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={url}
       alt={`Copertina di ${title}`}
-      onError={() => setHasError(true)}
       className="w-44 h-64 object-cover rounded-xl shadow-xl"
     />
   )
@@ -73,7 +77,10 @@ function CoverImage({ url, title }: { url: string; title: string }) {
 
 function CoverPlaceholder({ title }: { title: string }) {
   return (
-    <div className="w-44 h-64 bg-terracotta rounded-xl shadow-xl flex items-center justify-center p-6">
+    <div
+      data-testid="cover-placeholder"
+      className="w-44 h-64 bg-terracotta rounded-xl shadow-xl flex items-center justify-center p-6"
+    >
       <p className="font-display text-white text-center text-lg leading-snug">{title}</p>
     </div>
   )

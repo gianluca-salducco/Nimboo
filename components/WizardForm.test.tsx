@@ -1,6 +1,14 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import WizardForm from "./WizardForm";
+import { useRouter } from "next/navigation";
+
+jest.mock("@/lib/recommendationStore", () => ({
+  saveRecommendation: jest.fn(),
+}));
+
+import { saveRecommendation } from "@/lib/recommendationStore";
+const mockSave = saveRecommendation as jest.Mock;
 
 const Q1 = "Quali emozioni stai attraversando";
 const Q2 = "Cosa senti di aver bisogno";
@@ -84,4 +92,51 @@ test("advance button is disabled when answer has fewer than 10 characters", () =
 
   fireEvent.change(textarea, { target: { value: "corto" } }); // 5 chars — should disable
   expect(btn).toBeDisabled();
+});
+
+// --- Cycle E ---
+
+const apiResponse = {
+  title: "Il piccolo principe",
+  author: "Antoine de Saint-Exupéry",
+  isbn: "9788845292613",
+  explanation: "Un libro perfetto.",
+  amazonUrl: "https://www.amazon.it/s?k=Il+piccolo+principe",
+};
+
+const fillAndSubmit = () => {
+  const validAnswer = "Mi sento molto triste e stanco ultimamente";
+
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: validAnswer } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: validAnswer } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: validAnswer } });
+  fireEvent.click(screen.getByRole("button", { name: /Trovami il libro/i }));
+};
+
+test("calls saveRecommendation with API data before navigating", async () => {
+  const mockPush = jest.fn();
+  (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve(apiResponse),
+  }) as jest.Mock;
+
+  render(<WizardForm />);
+  fillAndSubmit();
+
+  await waitFor(() => {
+    expect(mockSave).toHaveBeenCalledWith(apiResponse);
+    expect(mockPush).toHaveBeenCalled();
+  });
+
+  const pushArg: string = mockPush.mock.calls[0][0];
+  expect(pushArg).toContain("/recommendation?data=");
+  expect(mockSave.mock.invocationCallOrder[0]).toBeLessThan(
+    mockPush.mock.invocationCallOrder[0]
+  );
 });
