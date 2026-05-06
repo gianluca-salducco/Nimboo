@@ -94,6 +94,44 @@ test("advance button is disabled when answer has fewer than 10 characters", () =
   expect(btn).toBeDisabled();
 });
 
+// --- Issue 18 ---
+
+test("question text renders as h1 on step 0", () => {
+  render(<WizardForm />);
+  const heading = screen.getByRole("heading", { level: 1 });
+  expect(heading).toHaveTextContent(new RegExp(Q1));
+});
+
+test("back button appears before the question h1 in DOM order", () => {
+  render(<WizardForm />);
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Mi sento molto triste e stanco ultimamente" } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  const backBtn = screen.getByRole("button", { name: /Indietro/i });
+  const heading = screen.getByRole("heading", { level: 1 });
+
+  expect(backBtn.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+test('"Come stai, adesso?" overline visible on step 0, hidden on step 1', () => {
+  render(<WizardForm />);
+  expect(screen.getByText("Come stai, adesso?")).toBeInTheDocument();
+
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Mi sento molto triste e stanco ultimamente" } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  expect(screen.queryByText("Come stai, adesso?")).not.toBeInTheDocument();
+});
+
+test("question text renders as h1 on step 1", () => {
+  render(<WizardForm />);
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Mi sento molto triste e stanco ultimamente" } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  const heading = screen.getByRole("heading", { level: 1 });
+  expect(heading).toHaveTextContent(new RegExp(Q2));
+});
+
 // --- Cycle E ---
 
 const apiResponse = {

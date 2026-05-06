@@ -51,24 +51,27 @@ export default function WizardForm() {
 
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-16">
         <div className="w-full max-w-xl">
-          {currentStep === 0 && (
-            <>
-              <h1 className="font-display text-4xl md:text-5xl text-ink mb-3 leading-tight">
-                Come stai, adesso?
-              </h1>
-              <p className="font-body text-ink-muted text-lg mb-8 leading-relaxed">
-                Rispondimi liberamente. Troverò il libro giusto per te.
-              </p>
-            </>
-          )}
-
           <ProgressDots total={QUESTIONS.length} current={currentStep} />
+
+          {currentStep > 0 && (
+            <button
+              onClick={handleBack}
+              className="font-body text-sm text-ink-muted hover:text-ink transition-colors text-left mt-6"
+            >
+              ← Indietro
+            </button>
+          )}
 
           <div className="mt-8 flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <label className="font-body text-sm font-medium text-ink-soft leading-snug">
+              {currentStep === 0 && (
+                <p className="font-body text-sm font-medium text-ink-muted uppercase tracking-widest">
+                  Come stai, adesso?
+                </p>
+              )}
+              <h1 className="font-display text-2xl md:text-3xl text-ink leading-tight">
                 {QUESTIONS[currentStep].label}
-              </label>
+              </h1>
               <textarea
                 ref={textareaRef}
                 value={currentAnswer}
@@ -88,15 +91,6 @@ export default function WizardForm() {
             >
               {isLastStep ? "Trovami il libro" : "Avanti"}
             </button>
-
-            {currentStep > 0 && (
-              <button
-                onClick={handleBack}
-                className="font-body text-sm text-ink-muted hover:text-ink transition-colors text-left"
-              >
-                ← Indietro
-              </button>
-            )}
           </div>
         </div>
       </main>
@@ -106,7 +100,7 @@ export default function WizardForm() {
 
 function ProgressDots({ total, current }: { total: number; current: number }) {
   return (
-    <div className="flex gap-2" aria-label={`Passo ${current + 1} di ${total}`}>
+    <div className="flex justify-center gap-2" aria-label={`Passo ${current + 1} di ${total}`}>
       {Array.from({ length: total }).map((_, i) => (
         <div
           key={i}
