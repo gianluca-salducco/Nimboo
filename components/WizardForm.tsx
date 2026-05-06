@@ -1,104 +1,32 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRef, useEffect } from "react";
 import Logo from "@/components/Logo";
-import { saveRecommendation } from "@/lib/recommendationStore";
-
-const QUESTIONS = [
-  {
-    label:
-      "Quali emozioni stai attraversando in questo periodo? Un libro potrebbe aiutarti a viverle meglio.",
-    placeholder: "Scrivimi come ti senti…",
-  },
-  {
-    label: "Cosa senti di aver bisogno dalla prossima lettura?",
-    placeholder: "Cosa stai cercando in un libro…",
-  },
-  {
-    label:
-      "Quanta energia hai per leggere — vuoi qualcosa di leggero o sei pronto a immergerti in qualcosa di impegnativo?",
-    placeholder: "Leggero e veloce, oppure denso e profondo…",
-  },
-];
-
-const LOADING_MESSAGES = [
-  "Sto leggendo le tue emozioni…",
-  "Sto cercando tra migliaia di libri…",
-  "Ho trovato quello giusto per te.",
-];
+import {
+  useRecommendationWizard,
+  QUESTIONS,
+  LOADING_MESSAGES,
+} from "@/hooks/useRecommendationWizard";
 
 export default function WizardForm() {
-  const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState(["", "", ""]);
-  const [loading, setLoading] = useState(false);
-  const [loadingIdx, setLoadingIdx] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const {
+    currentStep,
+    loading,
+    loadingIdx,
+    error,
+    isLastStep,
+    canAdvance,
+    currentAnswer,
+    handleChange,
+    handleAdvance,
+    handleBack,
+  } = useRecommendationWizard();
 
-  const currentAnswer = answers[currentStep];
-  const isLastStep = currentStep === QUESTIONS.length - 1;
-  const canAdvance = currentAnswer.length >= 10;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     textareaRef.current?.focus();
   }, [currentStep]);
-
-  useEffect(() => {
-    if (!loading) return;
-    const interval = setInterval(() => {
-      setLoadingIdx((prev) =>
-        prev < LOADING_MESSAGES.length - 1 ? prev + 1 : prev,
-      );
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [loading]);
-
-  const handleChange = (value: string) => {
-    setAnswers((prev) => {
-      const next = [...prev];
-      next[currentStep] = value;
-      return next;
-    });
-  };
-
-  const handleAdvance = async () => {
-    if (!canAdvance) return;
-
-    if (!isLastStep) {
-      setCurrentStep((s) => s + 1);
-      return;
-    }
-
-    setLoading(true);
-    setLoadingIdx(0);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/recommend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          q1: answers[0],
-          q2: answers[1],
-          q3: answers[2],
-        }),
-      });
-      if (!res.ok) throw new Error("Errore nella risposta del server");
-      const data = await res.json();
-      saveRecommendation(data);
-      const encoded = encodeURIComponent(JSON.stringify(data));
-      router.push(`/recommendation?data=${encoded}`);
-    } catch {
-      setError("Qualcosa è andato storto. Riprova tra poco.");
-      setLoading(false);
-    }
-  };
-
-  const handleBack = () => {
-    setCurrentStep((s) => s - 1);
-  };
 
   if (loading) {
     return (

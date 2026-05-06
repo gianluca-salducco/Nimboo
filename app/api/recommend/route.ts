@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getBookRecommendation } from '@/lib/claude'
+import { MAX_ANSWER_LENGTH } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,8 +14,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const MAX_LENGTH = 1000
-    if (q1.length > MAX_LENGTH || q2.length > MAX_LENGTH || q3.length > MAX_LENGTH) {
+    if (q1.length > MAX_ANSWER_LENGTH || q2.length > MAX_ANSWER_LENGTH || q3.length > MAX_ANSWER_LENGTH) {
       return NextResponse.json(
         { error: 'Input troppo lungo. Massimo 1000 caratteri per campo.' },
         { status: 400 }

@@ -1,16 +1,13 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { BookRecommendation } from "./types";
+import { parseBookRecommendation } from "./parseBookRecommendation";
+
+export type { BookRecommendation };
+export { parseBookRecommendation };
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
-
-export interface BookRecommendation {
-  title: string;
-  author: string;
-  isbn: string;
-  explanation: string;
-  amazonUrl: string;
-}
 
 export async function getBookRecommendation(
   q1: string,
@@ -59,8 +56,5 @@ Regole:
     throw new Error("Risposta inattesa da Claude");
   }
 
-  // Rimuove eventuali blocchi markdown (```json ... ```) prima del parse
-  const raw = content.text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-
-  return JSON.parse(raw) as BookRecommendation;
+  return parseBookRecommendation(content.text);
 }

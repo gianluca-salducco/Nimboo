@@ -2,14 +2,7 @@
 
 import Link from 'next/link'
 import { useCoverUrl } from '@/lib/useCoverUrl'
-
-interface BookRecommendation {
-  title: string
-  author: string
-  isbn: string
-  explanation: string
-  amazonUrl: string
-}
+import type { BookRecommendation } from '@/lib/types'
 
 export default function BookCard({ recommendation }: { recommendation: BookRecommendation }) {
   const { title, author, isbn, explanation, amazonUrl } = recommendation
