@@ -40,6 +40,7 @@ export type WizardState = {
   handleChange: (value: string) => void;
   handleAdvance: () => Promise<void>;
   handleBack: () => void;
+  goToStep: (index: number) => void;
 };
 
 export function useRecommendationWizard(): WizardState {
@@ -108,6 +109,10 @@ export function useRecommendationWizard(): WizardState {
     setCurrentStep((s) => s - 1);
   };
 
+  const goToStep = (index: number) => {
+    if (index < currentStep) setCurrentStep(index);
+  };
+
   return {
     currentStep,
     answers,
@@ -120,5 +125,6 @@ export function useRecommendationWizard(): WizardState {
     handleChange,
     handleAdvance,
     handleBack,
+    goToStep,
   };
 }

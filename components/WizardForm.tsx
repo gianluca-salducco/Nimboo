@@ -20,6 +20,7 @@ export default function WizardForm() {
     handleChange,
     handleAdvance,
     handleBack,
+    goToStep,
   } = useRecommendationWizard();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -51,7 +52,7 @@ export default function WizardForm() {
 
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-16">
         <div className="w-full max-w-xl">
-          <ProgressDots total={QUESTIONS.length} current={currentStep} />
+          <ProgressDots total={QUESTIONS.length} current={currentStep} onStepClick={goToStep} />
 
           {currentStep > 0 && (
             <button
@@ -98,21 +99,44 @@ export default function WizardForm() {
   );
 }
 
-function ProgressDots({ total, current }: { total: number; current: number }) {
+function ProgressDots({
+  total,
+  current,
+  onStepClick,
+}: {
+  total: number;
+  current: number;
+  onStepClick?: (index: number) => void;
+}) {
   return (
     <div className="flex justify-center gap-2" aria-label={`Passo ${current + 1} di ${total}`}>
-      {Array.from({ length: total }).map((_, i) => (
-        <div
-          key={i}
-          className={`w-2.5 h-2.5 rounded-full transition-all ${
-            i < current
-              ? "bg-terracotta"
-              : i === current
-                ? "border-2 border-terracotta bg-transparent"
-                : "bg-black/15"
-          }`}
-        />
-      ))}
+      {Array.from({ length: total }).map((_, i) => {
+        const isCompleted = i < current;
+        const baseClass = "w-2.5 h-2.5 rounded-full transition-all";
+        const colorClass = isCompleted
+          ? "bg-terracotta"
+          : i === current
+            ? "border-2 border-terracotta bg-transparent"
+            : "bg-black/15";
+
+        if (isCompleted && onStepClick) {
+          return (
+            <button
+              key={i}
+              aria-label={`Vai al passo ${i + 1}`}
+              onClick={() => onStepClick(i)}
+              className={`${baseClass} ${colorClass} cursor-pointer hover:scale-125`}
+            />
+          );
+        }
+
+        return (
+          <div
+            key={i}
+            className={`${baseClass} ${colorClass} cursor-default`}
+          />
+        );
+      })}
     </div>
   );
 }

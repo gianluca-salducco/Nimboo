@@ -132,6 +132,57 @@ test("question text renders as h1 on step 1", () => {
   expect(heading).toHaveTextContent(new RegExp(Q2));
 });
 
+// --- Issue 19: clickable progress dots ---
+
+const advanceToStep = (step: number) => {
+  const validAnswer = "Mi sento molto triste e stanco ultimamente";
+  for (let i = 0; i < step; i++) {
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: validAnswer } });
+    fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+  }
+};
+
+test("answers are preserved after clicking a completed dot", () => {
+  render(<WizardForm />);
+  const answer1 = "Mi sento molto triste e stanco ultimamente";
+  const answer2 = "Ho bisogno di qualcosa di confortante e bello";
+
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: answer1 } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: answer2 } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+
+  // now on step 2, go back to step 0 via dot
+  fireEvent.click(screen.getByRole("button", { name: /Vai al passo 1/i }));
+  expect(screen.getByRole("textbox")).toHaveValue(answer1);
+
+  // advance again to step 1 — answer2 should still be there
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: answer1 } });
+  fireEvent.click(screen.getByRole("button", { name: /Avanti/i }));
+  expect(screen.getByRole("textbox")).toHaveValue(answer2);
+});
+
+test("current and future dots are not interactive buttons", () => {
+  render(<WizardForm />);
+  advanceToStep(1); // now on step 1 (index 1)
+
+  // dot 1 (current) and dot 2 (future) should not be buttons
+  expect(screen.queryByRole("button", { name: /Vai al passo 2/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Vai al passo 3/i })).not.toBeInTheDocument();
+  // dot 0 (completed) should be a button
+  expect(screen.getByRole("button", { name: /Vai al passo 1/i })).toBeInTheDocument();
+});
+
+test("clicking a completed dot navigates back to that step", () => {
+  render(<WizardForm />);
+  advanceToStep(2);
+  expect(screen.getByLabelText(/Passo 3 di 3/i)).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole("button", { name: /Vai al passo 1/i }));
+
+  expect(screen.getByLabelText(/Passo 1 di 3/i)).toBeInTheDocument();
+});
+
 // --- Cycle E ---
 
 const apiResponse = {
@@ -173,7 +224,7 @@ test("calls saveRecommendation with API data before navigating", async () => {
   });
 
   const pushArg: string = mockPush.mock.calls[0][0];
-  expect(pushArg).toContain("/recommendation?data=");
+  expect(pushArg).toBe("/recommendation");
   expect(mockSave.mock.invocationCallOrder[0]).toBeLessThan(
     mockPush.mock.invocationCallOrder[0]
   );
