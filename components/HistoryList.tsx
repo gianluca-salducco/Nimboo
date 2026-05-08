@@ -6,7 +6,7 @@ import { getHistory, type StoredRecommendation } from "@/lib/recommendationStore
 export default function HistoryList() {
   const router = useRouter();
   const history = getHistory();
-  if (history.length === 0) return null;
+  if (history.length <= 1) return null;
 
   const handleCardClick = (rec: StoredRecommendation) => {
     const encoded = encodeURIComponent(JSON.stringify(rec));

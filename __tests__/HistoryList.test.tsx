@@ -35,10 +35,18 @@ test("renders nothing when history is empty", () => {
   expect(container.firstChild).toBeNull();
 });
 
+// --- Cycle E ---
+
+test("renders nothing when history has exactly one entry", () => {
+  mockGetHistory.mockReturnValue([makeRec("Il piccolo principe")]);
+  const { container } = render(<HistoryList />);
+  expect(container.firstChild).toBeNull();
+});
+
 // --- Cycle B ---
 
-test("shows heading when history has at least one entry", () => {
-  mockGetHistory.mockReturnValue([makeRec("Il piccolo principe")]);
+test("shows heading when history has two or more entries", () => {
+  mockGetHistory.mockReturnValue([makeRec("Il piccolo principe"), makeRec("1984")]);
   render(<HistoryList />);
   expect(screen.getByText("I tuoi consigli di oggi")).toBeInTheDocument();
 });
@@ -61,7 +69,7 @@ test("each card shows title and author", () => {
 
 test("clicking a card navigates to /recommendation with encoded data", () => {
   const rec = makeRec("Il nome della rosa", "Umberto Eco");
-  mockGetHistory.mockReturnValue([rec]);
+  mockGetHistory.mockReturnValue([rec, makeRec("altro libro")]);
   render(<HistoryList />);
 
   fireEvent.click(screen.getByText("Il nome della rosa"));
