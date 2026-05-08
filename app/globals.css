@@ -7,8 +7,7 @@
   --ink: #1C1814;
   --ink-muted: #8C7E75;
   --terracotta: #C4633A;
-  --sage: #7A9E8A;
-  --amber: #D4963A;
+  --shadow-terracotta: 0 4px 24px rgba(196, 99, 58, 0.3);
 }
 
 * {

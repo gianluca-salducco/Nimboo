@@ -88,7 +88,7 @@ export default function WizardForm() {
                   onChange={(e) => handleChange(e.target.value)}
                   rows={4}
                   placeholder={QUESTIONS[currentStep].placeholder}
-                  className="w-full rounded-xl border border-black/10 bg-white/60 px-4 py-3 font-body text-ink placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none transition-all"
+                  className="w-full rounded-xl border border-black/10 bg-white/60 backdrop-blur-sm px-4 py-3 font-body text-ink placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none transition-all"
                 />
               </div>
 
@@ -97,7 +97,7 @@ export default function WizardForm() {
               <button
                 onClick={handleAdvance}
                 disabled={!canAdvance}
-                className="w-full py-4 rounded-full bg-terracotta text-white font-body font-medium text-lg transition-all hover:bg-terracotta-light hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 shadow-[0_4px_24px_rgba(196,99,58,0.3)]"
+                className="w-full py-4 rounded-full bg-terracotta text-white font-body font-medium text-lg transition-all hover:bg-terracotta-light hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 shadow-[var(--shadow-terracotta)]"
               >
                 {isLastStep ? "Trovami il libro" : "Avanti"}
               </button>

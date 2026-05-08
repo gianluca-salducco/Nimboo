@@ -206,6 +206,21 @@ const fillAndSubmit = () => {
   fireEvent.click(screen.getByRole("button", { name: /Trovami il libro/i }));
 };
 
+// --- Issue 24: design-token polish ---
+
+test("textarea has backdrop-blur-sm for the frosted-glass effect", () => {
+  render(<WizardForm />);
+  const textarea = screen.getByRole("textbox");
+  expect(textarea.className).toContain("backdrop-blur-sm");
+});
+
+test("primary action button uses the --shadow-terracotta CSS token", () => {
+  render(<WizardForm />);
+  const btn = screen.getByRole("button", { name: /Avanti/i });
+  expect(btn.className).toContain("shadow-[var(--shadow-terracotta)]");
+  expect(btn.className).not.toContain("rgba(196,99,58");
+});
+
 test("calls saveRecommendation with API data before navigating", async () => {
   const mockPush = jest.fn();
   (useRouter as jest.Mock).mockReturnValue({ push: mockPush });

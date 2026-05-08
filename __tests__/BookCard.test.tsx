@@ -48,6 +48,15 @@ test("shows terracotta placeholder when cover is unavailable", () => {
   expect(screen.queryByTestId("cover-loading")).not.toBeInTheDocument();
 });
 
+// Issue 24: shadow token
+test("Amazon CTA link uses the --shadow-terracotta CSS token", () => {
+  mockCoverUrl({ status: "loading" });
+  render(<BookCard recommendation={RECOMMENDATION} />);
+  const link = screen.getByRole("link", { name: /compralo su amazon/i });
+  expect(link.className).toContain("shadow-[var(--shadow-terracotta)]");
+  expect(link.className).not.toContain("rgba(196,99,58");
+});
+
 // Title, author, explanation and CTA are always visible regardless of cover status
 test("renders title, author, explanation and CTA immediately regardless of cover status", () => {
   mockCoverUrl({ status: "loading" });

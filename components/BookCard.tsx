@@ -30,7 +30,7 @@ export default function BookCard({ recommendation }: { recommendation: BookRecom
           href={amazonUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full max-w-sm py-4 rounded-full bg-terracotta text-white font-body font-medium text-lg text-center transition-all hover:bg-terracotta-light hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_24px_rgba(196,99,58,0.3)]"
+          className="w-full max-w-sm py-4 rounded-full bg-terracotta text-white font-body font-medium text-lg text-center transition-all hover:bg-terracotta-light hover:-translate-y-0.5 active:translate-y-0 shadow-[var(--shadow-terracotta)]"
         >
           Compralo su Amazon →
         </a>

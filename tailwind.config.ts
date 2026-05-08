@@ -16,8 +16,6 @@ const config: Config = {
         terracotta: '#C4633A',
         'terracotta-light': '#E8845C',
         'terracotta-pale': '#F5E8E0',
-        sage: '#7A9E8A',
-        amber: '#D4963A',
       },
       fontFamily: {
         display: ['"Playfair Display"', 'Georgia', 'serif'],

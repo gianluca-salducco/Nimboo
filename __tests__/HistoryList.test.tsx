@@ -77,3 +77,24 @@ test("clicking a card navigates to /recommendation with encoded data", () => {
   const expected = `/recommendation?data=${encodeURIComponent(JSON.stringify(rec))}`;
   expect(mockPush).toHaveBeenCalledWith(expected);
 });
+
+// --- Cycle F: design-token polish ---
+
+test("card items use border-black/[0.08] (valid opacity stop)", () => {
+  mockGetHistory.mockReturnValue([makeRec("Il piccolo principe"), makeRec("1984")]);
+  render(<HistoryList />);
+  const items = screen.getAllByRole("listitem");
+  items.forEach((item) => {
+    expect(item.className).toContain("border-black/[0.08]");
+    expect(item.className).not.toContain("border-black/8");
+  });
+});
+
+test("card items have backdrop-blur-sm for the frosted-glass effect", () => {
+  mockGetHistory.mockReturnValue([makeRec("Il piccolo principe"), makeRec("1984")]);
+  render(<HistoryList />);
+  const items = screen.getAllByRole("listitem");
+  items.forEach((item) => {
+    expect(item.className).toContain("backdrop-blur-sm");
+  });
+});

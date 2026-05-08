@@ -21,7 +21,7 @@ export default function HistoryList() {
           <li
             key={i}
             onClick={() => handleCardClick(rec)}
-            className="flex items-center gap-4 p-3 rounded-xl border border-black/8 bg-white/60 cursor-pointer hover:border-terracotta/40 transition-colors"
+            className="flex items-center gap-4 p-3 rounded-xl border border-black/[0.08] bg-white/60 backdrop-blur-sm cursor-pointer hover:border-terracotta/40 transition-colors"
           >
             <CoverThumb isbn={rec.isbn} title={rec.title} />
             <div className="flex flex-col min-w-0">
