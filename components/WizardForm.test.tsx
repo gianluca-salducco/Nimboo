@@ -206,6 +206,41 @@ const fillAndSubmit = () => {
   fireEvent.click(screen.getByRole("button", { name: /Trovami il libro/i }));
 };
 
+// --- Issue 25: journal-entry textarea styling ---
+
+test("textarea has no full border box (no 'border ' class or 'rounded-xl')", () => {
+  render(<WizardForm />);
+  const textarea = screen.getByRole("textbox");
+  expect(textarea.className).not.toMatch(/\bborder\b(?!-)/);
+  expect(textarea.className).not.toContain("rounded-xl");
+});
+
+test("textarea has bottom-border-only treatment", () => {
+  render(<WizardForm />);
+  const textarea = screen.getByRole("textbox");
+  expect(textarea.className).toContain("border-b");
+});
+
+test("textarea background blends into cream page (no bg-white/60)", () => {
+  render(<WizardForm />);
+  const textarea = screen.getByRole("textbox");
+  expect(textarea.className).not.toContain("bg-white/60");
+  expect(textarea.className).toMatch(/bg-/);
+});
+
+test("textarea has generous line-height (leading-relaxed or leading-loose)", () => {
+  render(<WizardForm />);
+  const textarea = screen.getByRole("textbox");
+  expect(textarea.className).toMatch(/leading-(relaxed|loose)/);
+});
+
+test("textarea uses Playfair Display (font-display) for typed text", () => {
+  render(<WizardForm />);
+  const textarea = screen.getByRole("textbox");
+  expect(textarea.className).toContain("font-display");
+  expect(textarea.className).not.toContain("font-body");
+});
+
 // --- Issue 24: design-token polish ---
 
 test("textarea has backdrop-blur-sm for the frosted-glass effect", () => {

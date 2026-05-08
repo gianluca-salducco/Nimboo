@@ -88,7 +88,7 @@ export default function WizardForm() {
                   onChange={(e) => handleChange(e.target.value)}
                   rows={4}
                   placeholder={QUESTIONS[currentStep].placeholder}
-                  className="w-full rounded-xl border border-black/10 bg-white/60 backdrop-blur-sm px-4 py-3 font-body text-ink placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none transition-all"
+                  className="w-full border-b border-black/10 bg-cream/80 backdrop-blur-sm px-4 py-3 font-display text-ink leading-relaxed placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none transition-all"
                 />
               </div>
 
