@@ -6,6 +6,7 @@ const config: Config = {
   moduleFileExtensions: ["ts", "tsx", "js"],
   setupFilesAfterEnv: ["@testing-library/jest-dom"],
   moduleNameMapper: {
+    "^framer-motion$": "<rootDir>/__mocks__/framer-motion.tsx",
     "^next/navigation$": "<rootDir>/__mocks__/next/navigation.ts",
     "^@/(.*)$": "<rootDir>/$1",
   },

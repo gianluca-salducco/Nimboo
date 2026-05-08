@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Logo from "@/components/Logo";
 import {
   useRecommendationWizard,
@@ -63,36 +64,45 @@ export default function WizardForm() {
             </button>
           )}
 
-          <div className="mt-8 flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-              {currentStep === 0 && (
-                <p className="font-body text-sm font-medium text-ink-muted uppercase tracking-widest">
-                  Come stai, adesso?
-                </p>
-              )}
-              <h1 className="font-display text-2xl md:text-3xl text-ink leading-tight">
-                {QUESTIONS[currentStep].label}
-              </h1>
-              <textarea
-                ref={textareaRef}
-                value={currentAnswer}
-                onChange={(e) => handleChange(e.target.value)}
-                rows={4}
-                placeholder={QUESTIONS[currentStep].placeholder}
-                className="w-full rounded-xl border border-black/10 bg-white/60 px-4 py-3 font-body text-ink placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none transition-all"
-              />
-            </div>
-
-            {error && <p className="text-sm text-red-500 font-body">{error}</p>}
-
-            <button
-              onClick={handleAdvance}
-              disabled={!canAdvance}
-              className="w-full py-4 rounded-full bg-terracotta text-white font-body font-medium text-lg transition-all hover:bg-terracotta-light hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 shadow-[0_4px_24px_rgba(196,99,58,0.3)]"
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="mt-8 flex flex-col gap-6"
             >
-              {isLastStep ? "Trovami il libro" : "Avanti"}
-            </button>
-          </div>
+              <div className="flex flex-col gap-2">
+                {currentStep === 0 && (
+                  <p className="font-body text-sm font-medium text-ink-muted uppercase tracking-widest">
+                    Come stai, adesso?
+                  </p>
+                )}
+                <h1 className="font-display text-2xl md:text-3xl text-ink leading-tight">
+                  {QUESTIONS[currentStep].label}
+                </h1>
+                <textarea
+                  ref={textareaRef}
+                  value={currentAnswer}
+                  onChange={(e) => handleChange(e.target.value)}
+                  rows={4}
+                  placeholder={QUESTIONS[currentStep].placeholder}
+                  className="w-full rounded-xl border border-black/10 bg-white/60 px-4 py-3 font-body text-ink placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none transition-all"
+                />
+              </div>
+
+              {error && <p className="text-sm text-red-500 font-body">{error}</p>}
+
+              <button
+                onClick={handleAdvance}
+                disabled={!canAdvance}
+                className="w-full py-4 rounded-full bg-terracotta text-white font-body font-medium text-lg transition-all hover:bg-terracotta-light hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 shadow-[0_4px_24px_rgba(196,99,58,0.3)]"
+              >
+                {isLastStep ? "Trovami il libro" : "Avanti"}
+              </button>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
     </div>
