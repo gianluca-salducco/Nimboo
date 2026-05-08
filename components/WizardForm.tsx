@@ -34,13 +34,19 @@ export default function WizardForm() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-10 px-6">
         <Logo />
-        <p
-          key={loadingIdx}
-          className="font-display text-2xl md:text-3xl text-ink text-center animate-pulse"
-        >
-          {LOADING_MESSAGES[loadingIdx]}
-        </p>
-        <div className="w-8 h-8 rounded-full border-[3px] border-terracotta border-t-transparent animate-spin" />
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={loadingIdx}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="font-display text-2xl md:text-3xl text-ink text-center"
+          >
+            {LOADING_MESSAGES[loadingIdx]}
+          </motion.p>
+        </AnimatePresence>
+        <div data-testid="ambient-animation" className="ambient-pulse" />
       </div>
     );
   }
